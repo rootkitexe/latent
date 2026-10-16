@@ -3,6 +3,7 @@ import './globals.css';
 import Providers from '@/components/core/Providers';
 import Hud from '@/components/core/Hud';
 import Cursor from '@/components/core/Cursor';
+import FitMore from '@/components/core/FitMore';
 
 const display = Anybody({ subsets: ['latin'], axes: ['wdth'], variable: '--font-display', display: 'swap' });
 const sans = Inter_Tight({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <main>{children}</main>
           <Hud />
+          <FitMore />
           <Cursor />
         </Providers>
       </body>

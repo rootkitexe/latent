@@ -63,7 +63,7 @@ body {
     font-family: var(--font-display);
     font-variation-settings: 'wdth' 150;
     font-weight: 900;
-    font-size: clamp(80px, 17vw, 300px);
+    font-size: clamp(64px, min(17vw, 30svh), 300px);
     letter-spacing: -0.04em;
     line-height: 0.78;
     text-transform: uppercase;
@@ -72,7 +72,7 @@ body {
     font-family: var(--font-display);
     font-variation-settings: 'wdth' 120;
     font-weight: 700;
-    font-size: clamp(40px, 6.2vw, 104px);
+    font-size: clamp(32px, min(6.2vw, 10svh), 104px);
     letter-spacing: -0.03em;
     line-height: 0.9;
   }
@@ -80,7 +80,7 @@ body {
     font-family: var(--font-display);
     font-variation-settings: 'wdth' 110;
     font-weight: 600;
-    font-size: clamp(22px, 2.2vw, 34px);
+    font-size: clamp(19px, min(2.2vw, 3.9svh), 34px);
     letter-spacing: -0.02em;
     line-height: 1.05;
   }
@@ -100,7 +100,7 @@ body {
     color: rgb(var(--fg-rgb) / 0.42);
     font-variant-numeric: tabular-nums;
   }
-  .body { font-size: clamp(15px, 1.15vw, 18px); line-height: 1.55; color: rgb(var(--fg-rgb) / 0.68); max-width: 52ch; }
+  .body { font-size: clamp(14px, min(1.15vw, 2.3svh), 18px); line-height: 1.55; color: rgb(var(--fg-rgb) / 0.68); max-width: 52ch; }
 
   /* House controls */
   .pill {
@@ -124,6 +124,20 @@ body {
     background: var(--void); border: 1.5px solid var(--signal); box-shadow: 0 0 0 4px rgb(255 79 31 / 0.12);
   }
   .slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--void); border: 1.5px solid var(--signal); }
+
+  /*
+   * Overlay column: a chapter's title, explainer and controls stacked between the HUD header and the
+   * training readout, so they can never overlap on short screens. The explainer (.fit-copy) takes the
+   * leftover height; if it doesn't fit, its last line fades out instead of sliding under the controls.
+   */
+  .ov-col { position: absolute; left: 0; display: flex; flex-direction: column; top: 76px; bottom: 80px; }
+  @media (min-width: 768px) { .ov-col { top: 84px; bottom: 88px; } }
+  .fit-copy {
+    min-height: 0; flex: 1 1 auto; overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+  }
+  .ov-controls { flex: 0 0 auto; padding-top: 14px; }
 
   .panel {
     border: 1px solid var(--hairline);
@@ -156,3 +170,32 @@ body {
 @keyframes eq { from { height: 2px } to { height: 12px } }
 
 @keyframes drip { from { transform: translateY(-12px) } to { transform: translateY(32px) } }
+
+/* Secondary decoration that gives way on short screens (laptops with browser chrome). */
+@media (max-height: 820px) { .short-hide { display: none !important; } }
+
+/* "more ↓" toggle for explainers that don't fit (src/components/core/FitMore.js) */
+.fit-more {
+  position: absolute; left: 0; top: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 20px; padding: 0 9px; border-radius: 999px;
+  font: 500 9.5px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--signal); background: rgb(5 5 6 / .9); border: 1px solid rgb(255 79 31 / .45);
+  opacity: 0; pointer-events: none; transition: opacity .35s var(--ease), background .35s var(--ease);
+}
+.fit-more[data-on='1'] { opacity: 1; pointer-events: auto; }
+.fit-more:hover { background: var(--signal); color: #fff; }
+.fit-more[data-tone='paper'] { background: rgb(236 233 226 / .94); }
+.fit-panel {
+  position: absolute; overflow-y: auto; overscroll-behavior: contain;
+  padding: 14px 16px 44px;
+  border-radius: 16px; border: 1px solid rgb(255 255 255 / .1);
+  background: rgb(5 5 6 / .9); backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 30px 80px -30px rgb(0 0 0 / .8);
+  animation: fitIn .45s var(--ease) both;
+  --fg-rgb: 255 255 255;
+}
+.fit-panel[data-tone='paper'] { background: rgb(236 233 226 / .95); border-color: rgb(11 11 13 / .12); --fg-rgb: 11 11 13; color: var(--ink); }
+.fit-panel-body * { animation: none !important; opacity: 1 !important; transform: none !important; }
+.fit-less { position: absolute; left: 16px; top: auto; bottom: 12px; }
+@keyframes fitIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }

@@ -325,7 +325,7 @@ function Stage() {
       </div>
 
       {/* step 1: the vector as a bar-code */}
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-[6] flex -translate-y-1/2 justify-center" style={{ visibility: 'hidden' }}>
+      <div className="emb-bar pointer-events-none absolute inset-x-0 z-[6] flex -translate-y-1/2 justify-center" style={{ visibility: 'hidden' }}>
         <div className="flex w-[min(760px,88vw)] flex-col items-center">
           <div className="hud mb-3 text-fg-68">“{barWord}” = 300 numbers</div>
           <div ref={barcode} className="relative h-[150px] w-full origin-center md:h-[180px]">
@@ -358,21 +358,43 @@ function Stage() {
 
       {/* overlay */}
       <div className="pointer-events-none absolute inset-0 z-10">
-        <div className="gx absolute left-0 top-[76px] max-w-[min(560px,92vw)] md:top-[88px]">
+        <div className="gx ov-col w-full md:max-w-[min(640px,92vw)]">
+          <div className="shrink-0" data-ov-avoid>
           <div className="hud mb-3">L04 / Embeddings</div>
-          <h2 className="display text-[clamp(38px,5.4vw,88px)]">Embeddings</h2>
-          <p className="serif mt-2 text-[clamp(22px,2.3vw,34px)] text-ice">meaning has a shape</p>
-          <div className="mt-5 md:mt-8" key={step} style={{ animation: 'embIn .9s var(--ease) both' }}>
+          <h2 className="display text-[clamp(32px,min(5.4vw,9svh),88px)]">Embeddings</h2>
+          <p className="serif mt-2 text-[clamp(20px,min(2.3vw,4.2svh),34px)] text-ice">meaning has a shape</p>
+          </div>
+          <div className="fit-copy">
+          <div className="mt-5 md:mt-7" data-ov-avoid key={step} style={{ animation: 'embIn .9s var(--ease) both' }}>
             <div className="hud mb-2" ref={r.step}><span className="text-signal">0{step + 1}</span> / 0{NSTEP} — {info.title}</div>
             <p className="body text-[14.5px] md:text-[17px]">{info.body}</p>
           </div>
+          </div>
+          {/* dock */}
+          <Dock
+            G={G}
+            tab={tab}
+            setTab={(t) => {
+              setTab(t);
+              if (t === 'analogy' && !S.ana) runAnalogy(...triple);
+              if (t === 'search' && S.mode !== 'search') selectWord(focusWord && lookup(G, focusWord) >= 0 ? focusWord : 'coffee');
+            }}
+            query={query}
+            setQuery={setQuery}
+            onSearch={(w) => selectWord(w)}
+            triple={triple}
+            setTriple={setTriple}
+            onRun={(a, b, c) => runAnalogy(a, b, c)}
+            msg={msg}
+            step={step}
+          />
         </div>
 
         {/* result panel (right) */}
         <ResultPanel G={G} nbrs={nbrs} ana={ana} focusWord={focusWord} onPick={(w) => selectWord(w)} step={step} />
 
         {/* readouts */}
-        <div className="gx absolute bottom-[84px] right-0 hidden text-right md:block">
+        <div className={`gx absolute bottom-[84px] right-0 hidden text-right transition-opacity duration-700 xl:block ${step === 0 ? 'opacity-0' : 'opacity-100'}`} data-ov-avoid>
           <dl className="hud grid grid-cols-[auto_auto] gap-x-5 gap-y-1">
             <dt>Dimensions</dt><dd className="text-fg">300</dd>
             <dt>Stars</dt><dd className="text-fg">{G ? G.N.toLocaleString() : '—'}</dd>
@@ -384,24 +406,7 @@ function Stage() {
           <div className="hud mt-3 text-fg-22">GloVe 6B · 300-D · map: t-SNE 3-D</div>
         </div>
 
-        {/* dock */}
-        <Dock
-          G={G}
-          tab={tab}
-          setTab={(t) => {
-            setTab(t);
-            if (t === 'analogy' && !S.ana) runAnalogy(...triple);
-            if (t === 'search' && S.mode !== 'search') selectWord(focusWord && lookup(G, focusWord) >= 0 ? focusWord : 'coffee');
-          }}
-          query={query}
-          setQuery={setQuery}
-          onSearch={(w) => selectWord(w)}
-          triple={triple}
-          setTriple={setTriple}
-          onRun={(a, b, c) => runAnalogy(a, b, c)}
-          msg={msg}
-          step={step}
-        />
+
       </div>
 
       <style>{CSS}</style>
@@ -416,7 +421,7 @@ function Dock({ G, tab, setTab, query, setQuery, onSearch, triple, setTriple, on
   const submit = (e) => { e.preventDefault(); if (query.trim()) { onSearch(query.trim()); setOpen(false); } };
   const live = step >= 1;
   return (
-    <div className={`emb-dock gx pointer-events-auto absolute bottom-[78px] left-0 w-full max-w-[640px] transition-opacity duration-700 ${live ? 'opacity-100' : 'opacity-0 md:opacity-40'}`}>
+    <div data-ov-avoid className={`emb-dock ov-controls pointer-events-auto w-full max-w-[640px] transition-opacity duration-700 ${live ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
       <div className="mb-3 flex items-center gap-2">
         <button type="button" className="pill" data-active={tab === 'search'} onClick={() => setTab('search')} aria-pressed={tab === 'search'}>Neighbours</button>
         <button type="button" className="pill" data-active={tab === 'analogy'} onClick={() => setTab('analogy')} aria-pressed={tab === 'analogy'}>Arithmetic</button>
@@ -503,7 +508,7 @@ function ResultPanel({ G, nbrs, ana, focusWord, onPick, step }) {
   if (ana) {
     const top = ana.ranks[0];
     return (
-      <div key={ana.id} className="emb-result gx pointer-events-auto absolute right-0 top-[96px] hidden md:block w-[min(440px,100%)] text-right" style={{ animation: 'embIn .9s var(--ease) both' }}>
+      <div key={ana.id} data-ov-avoid className="emb-result gx pointer-events-auto absolute right-0 top-[96px] hidden md:block w-[min(440px,100%)] text-right" style={{ animation: 'embIn .9s var(--ease) both' }}>
         <div className="hud mb-2">computed in 300 dimensions</div>
         <div className="emb-eq">
           <span>{G.words[ana.a]}</span> <i>−</i> <span>{G.words[ana.b]}</span> <i>+</i> <span>{G.words[ana.c]}</span>
@@ -529,7 +534,7 @@ function ResultPanel({ G, nbrs, ana, focusWord, onPick, step }) {
   }
   if (!nbrs.length) return null;
   return (
-    <div key={focusWord} className="emb-result gx pointer-events-auto absolute right-0 top-[96px] hidden md:block w-[min(360px,100%)] text-right" style={{ animation: 'embIn .9s var(--ease) both' }}>
+    <div key={focusWord} data-ov-avoid className="emb-result gx pointer-events-auto absolute right-0 top-[96px] hidden md:block w-[min(360px,100%)] text-right" style={{ animation: 'embIn .9s var(--ease) both' }}>
       <div className="hud mb-1">nearest to</div>
       <div className="emb-answer">{focusWord}</div>
       <ol className="emb-nbrs mt-3 space-y-0.5">
@@ -557,6 +562,10 @@ function Bar({ v }) {
 }
 
 const CSS = `
+/* step-1 bar-code: centred, but below the explainer where it would otherwise collide */
+.emb-bar { top: 50%; }
+@media (max-width: 1100px), (max-height: 820px) { .emb-bar { top: 64%; } }
+
 @keyframes embIn { from { opacity: 0; transform: translateY(14px); filter: blur(6px) } to { opacity: 1; transform: none; filter: none } }
 .emb-label { position: absolute; left: 0; top: 0; white-space: nowrap; will-change: transform, opacity;
   font: 500 11px/1 var(--font-mono); letter-spacing: .06em; color: rgba(255,255,255,.62);
@@ -595,7 +604,6 @@ const CSS = `
 .emb-chips::-webkit-scrollbar { display: none; }
 @media (max-width: 768px) {
   .emb-slot { width: 74px; font-size: 13px; padding: 0 6px; }
-  .emb-dock { bottom: 76px; }
   .emb-result { top: auto; bottom: 236px; width: 100%; text-align: left; }
   .emb-result .emb-answer { font-size: 30px; }
   .emb-result .emb-eq { font-size: 17px; }

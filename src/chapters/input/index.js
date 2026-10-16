@@ -169,8 +169,8 @@ function Stage() {
         copy2Ref.current.style.transform = `translate3d(0, ${(1 - k) * 40}px, 0)`;
       }
       if (megaRef.current) {
-        megaRef.current.style.transform = `translate3d(0, ${-p * 30}vh, 0) scale(${1 + p * 0.25})`;
-        megaRef.current.style.opacity = String(1 - Math.min(1, p * 2.2));
+        megaRef.current.style.transform = `translate3d(0, ${-p * 12}vh, 0) scale(${1 + p * 0.25})`;
+        megaRef.current.style.opacity = String(1 - Math.min(1, p * 5)); // gone before it reaches the HUD
       }
       if (hintRef.current) hintRef.current.style.opacity = String(Math.max(0, 1 - p * 5));
       raf = requestAnimationFrame(loop);
@@ -200,7 +200,7 @@ function Stage() {
 
       {/* mega wordmark — in front of the canvas, difference-blended so branches invert through it */}
       <div className="pointer-events-none absolute inset-x-0 top-[9svh] flex justify-center mix-blend-difference" aria-hidden>
-        <div ref={megaRef} className="mega flex whitespace-nowrap text-white will-change-transform" style={{ fontSize: 'clamp(84px, 19.5vw, 340px)' }}>
+        <div ref={megaRef} className="mega flex whitespace-nowrap text-white will-change-transform" style={{ fontSize: 'clamp(72px, min(19.5vw, 34svh), 340px)' }}>
           {WORD.split('').map((c, i) => (
             <span key={i} style={{ fontVariationSettings: "'wdth' 100", transition: 'color .6s' }}>{c}</span>
           ))}
@@ -216,7 +216,7 @@ function Stage() {
           <span className="h-1.5 w-1.5 rounded-full bg-signal shadow-[0_0_10px_var(--signal)]" />
           L0 / Input
         </div>
-        <h1 className="display" style={{ fontSize: 'clamp(38px, 4.6vw, 76px)' }}>
+        <h1 className="display" style={{ fontSize: 'clamp(32px, min(4.6vw, 8svh), 76px)' }}>
           Learn AI<br />from the <span className="serif text-signal" style={{ fontSize: '1.08em', letterSpacing: '-0.02em' }}>inside.</span>
         </h1>
         <p className="body mt-7">
@@ -260,7 +260,7 @@ function Stage() {
       </div>
 
       {/* readouts */}
-      <div className="pointer-events-none absolute bottom-[86px] right-[var(--gx)] w-[230px] hud hidden sm:block">
+      <div className="pointer-events-none absolute bottom-[86px] right-[var(--gx)] w-[230px] hud hidden lg:block">
         <div className="flex justify-between"><span>Membrane potential</span><span ref={vNum} className="text-fg">0.00</span></div>
         <div className="mt-2 h-px bg-[var(--hairline)]"><div ref={vBar} className="h-px origin-left bg-signal" style={{ transform: 'scaleX(0)' }} /></div>
         <canvas ref={traceRef} width={460} height={90} className="mt-3 h-[45px] w-full" />
@@ -269,7 +269,7 @@ function Stage() {
         <div className="mt-2 flex justify-between text-fg-22"><span>Input</span><span ref={typedRef} className="normal-case tracking-normal text-fg-42" /></div>
       </div>
 
-      <div className="pointer-events-none absolute bottom-[86px] left-1/2 -translate-x-1/2 hud hidden md:flex flex-col items-center gap-2 text-fg-22">
+      <div className="short-hide pointer-events-none absolute bottom-[86px] left-1/2 -translate-x-1/2 hud hidden xl:flex flex-col items-center gap-2 text-fg-22">
         <span>Scroll — become the signal</span>
         <span className="h-8 w-px overflow-hidden bg-[var(--hairline)]"><span className="block h-3 w-px animate-[drip_1.8s_cubic-bezier(.16,1,.3,1)_infinite] bg-signal" /></span>
       </div>

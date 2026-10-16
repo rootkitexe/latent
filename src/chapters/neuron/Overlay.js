@@ -92,16 +92,20 @@ export default function Overlay() {
       <div className="nr-scrim" aria-hidden />
 
       {/* Title block */}
-      <div className="gx absolute left-0 top-[72px] max-w-[min(560px,100%)] md:top-[84px]">
+      <div className="gx ov-col right-0">
+        <div className="shrink-0 max-w-[min(560px,100%)]">
         <div className="hud flex items-center gap-3">
           <span className="text-signal">L01</span>
           <span>/ The Neuron · Perceptron</span>
         </div>
-        <h2 className="display mt-3 text-[clamp(38px,5.2vw,88px)]">The Neuron</h2>
-        <p className="serif mt-2 text-[clamp(22px,2.3vw,36px)] leading-none text-fg-68">a tiny, very opinionated vote.</p>
+        <h2 className="display mt-3 text-[clamp(32px,min(5.2vw,9svh),88px)]">The Neuron</h2>
+        <p className="serif mt-2 text-[clamp(20px,min(2.3vw,4.2svh),36px)] leading-none text-fg-68">a tiny, very opinionated vote.</p>
+        </div>
+
+        <div className="fit-copy max-w-[min(560px,100%)]">
 
         {/* Step explainer */}
-        <div key={step} className="nr-in mt-6 md:mt-9" aria-live="polite">
+        <div key={step} className="nr-in mt-5 md:mt-7" aria-live="polite">
           <div className="hud flex items-center gap-2">
             <span className="text-fg">{pad(step + 1)}</span>
             <span>/ {pad(STEPS.length)} — {S.label}</span>
@@ -123,7 +127,7 @@ export default function Overlay() {
             </button>
           ))}
         </nav>
-      </div>
+        </div>
 
       <div className="nr-dock">
       {/* Readouts */}
@@ -209,6 +213,7 @@ export default function Overlay() {
         </div>
       </div>
       </div>
+      </div>
     </div>
   );
 }
@@ -222,7 +227,7 @@ const CSS = `
 .nr-dot:hover { border-color: rgb(var(--fg-rgb) / .4); }
 .nr-dot[data-active='true'] { border-color: var(--signal); background: rgb(255 79 31 / .12); }
 .nr-dot[data-active='true'] .hud { color: #fff; }
-.nr-dock { position: absolute; left: var(--gx); right: var(--gx); bottom: 84px; display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: flex-end; gap: 24px; }
+.nr-dock { flex: 0 0 auto; padding-top: 14px; display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: flex-end; gap: 24px; }
 .nr-controls { width: min(500px, 100%); padding: 14px 16px 14px; flex-shrink: 0; }
 .nr-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; }
 .nr-row { display: flex; align-items: center; gap: 8px; height: 28px; }
@@ -238,10 +243,17 @@ const CSS = `
 .nr-led[data-on='true'] { background: var(--signal); box-shadow: 0 0 12px 2px rgb(255 79 31 / .7); }
 .nr-acc { font-family: var(--font-display); font-variation-settings: 'wdth' 130; font-weight: 800; font-size: clamp(36px, 3.6vw, 60px); line-height: .9; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .nr-acc[data-perfect='true'] { color: var(--signal); }
+/* short desktop windows: like mobile, show only the current step's controls so the explainer keeps its room */
+@media (min-width: 769px) and (max-height: 820px) {
+  .nr-controls { padding: 10px 14px; }
+  .nr-controls .nr-col[data-on='false'] { display: none; }
+  .nr-grid { grid-template-columns: 1fr; }
+  .nr-controls > .hud:first-child { margin-bottom: 4px; }
+}
 @media (max-width: 768px) {
   .nr-scrim { background: linear-gradient(180deg, rgb(5 5 6 / .85) 0%, rgb(5 5 6 / .4) 30%, rgb(5 5 6 / 0) 42%, rgb(5 5 6 / 0) 62%, rgb(5 5 6 / .7) 80%); }
   .nr-body { font-size: 14px; line-height: 1.45; }
-  .nr-dock { bottom: 74px; flex-direction: column; align-items: stretch; gap: 10px; }
+  .nr-dock { flex-direction: column; align-items: stretch; gap: 10px; }
   .nr-controls { padding: 10px 12px; width: 100%; }
   .nr-grid { grid-template-columns: 1fr; }
   .nr-controls .nr-col[data-on='false'] { display: none; }

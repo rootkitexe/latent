@@ -152,14 +152,16 @@ function Stage() {
       {/* ── overlay ── */}
       <div ref={root} className="pointer-events-none absolute inset-0 z-10 text-fg">
         {/* title block */}
-        <div className="gx absolute left-0 top-[76px] w-full md:top-[84px] md:max-w-[min(560px,46vw)]">
+        <div className="gx ov-col w-full md:w-auto md:max-w-[min(600px,50vw)]">
+          <div className="shrink-0 pr-[104px] md:pr-0">
           <div className="hud mb-3">L06 / Diffusion · generative models</div>
           <h2 className="display">Diffusion</h2>
-          <p className="serif mt-1 text-[clamp(22px,2.4vw,36px)] leading-none" style={{ color: 'var(--signal)' }}>
+          <p className="serif mt-1 text-[clamp(20px,min(2.4vw,4.4svh),36px)] leading-none" style={{ color: 'var(--signal)' }}>
             sculpting with static.
           </p>
 
-          <div key={step} className="mt-5 md:mt-8" style={{ animation: 'dfIn .9s cubic-bezier(.16,1,.3,1) both' }}>
+          </div>
+          <div key={step} className="fit-copy mt-4 md:mt-6" style={{ animation: 'dfIn .9s cubic-bezier(.16,1,.3,1) both' }}>
             <div className="hud mb-2 flex items-center gap-3">
               <span>{String(step + 1).padStart(2, '0')} / 05</span>
               <span className="h-px w-8 bg-[rgb(var(--fg-rgb)/0.3)]" />
@@ -170,72 +172,72 @@ function Stage() {
             <p className="body text-[14px] md:hidden">{S.body.slice(0, 2).join(' ')}</p>
             {S.formula ? <div className="hud mt-3 normal-case tracking-[0.06em] text-fg-68">{S.formula}</div> : null}
           </div>
+          {/* controls: prompt chips + generate + brush mode */}
+          <div className={`ov-controls ${gpuTier === 0 ? 'hidden' : ''}`}>
+            <div className="hud mb-2 flex items-center gap-2">
+              <span>Prompt</span>
+              <span className="text-fg-22">·</span>
+              <span className="hidden md:inline">{touch ? 'tap brush, then drag the cloud' : 'drag across the cloud to ' + (mode === 'denoise' ? 'denoise' : 'add noise')}</span>
+            </div>
+            <div className="pointer-events-auto -mx-[var(--gx)] flex gap-2 overflow-x-auto px-[var(--gx)] pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0" role="group" aria-label="Prompt">
+              {PROMPTS.map((pr) => (
+                <button
+                  key={pr.id}
+                  type="button"
+                  className="pill shrink-0 normal-case tracking-[0.04em]"
+                  data-active={prompt === pr.id && step >= 3 ? 'true' : 'false'}
+                  aria-pressed={prompt === pr.id}
+                  onClick={() => generate(pr.id)}
+                  style={prompt === pr.id && step < 3 ? { borderColor: 'rgb(var(--fg-rgb) / 0.5)', color: 'rgb(var(--fg-rgb))' } : undefined}
+                >
+                  “{pr.label}”
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-auto mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => generate()}
+                className="pill !h-[46px] !px-6 !text-[12px]"
+                data-active="true"
+                style={{ boxShadow: '0 10px 40px -12px rgb(255 79 31 / 0.65)' }}
+                aria-label="Generate: re-noise and run the reverse process"
+              >
+                <span aria-hidden className={busy ? 'inline-block animate-spin' : 'inline-block'}>✺</span>
+                {busy ? 'Denoising…' : 'Generate'}
+              </button>
+              <div className="flex rounded-full border border-[var(--hairline)] p-[3px]" role="group" aria-label="Brush mode">
+                {[['denoise', '− Denoise'], ['noise', '+ Noise']].map(([m, l]) => (
+                  <button
+                    key={m}
+                    type="button"
+                    aria-pressed={mode === m}
+                    onClick={() => setMode(m)}
+                    className="hud h-[32px] rounded-full px-3 transition-colors duration-500"
+                    style={mode === m ? { background: 'rgb(var(--fg-rgb))', color: 'var(--paper)' } : undefined}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+              {showTouchBrush ? (
+                <button type="button" className="pill" data-active={brushOn ? 'true' : 'false'} aria-pressed={brushOn} onClick={() => setBrushOn((v) => !v)}>
+                  {brushOn ? 'Brush on' : 'Brush'}
+                </button>
+              ) : null}
+            </div>
+          </div>
+
         </div>
 
         {/* step progress ticks (right edge) */}
-        <div className={`absolute right-[var(--gx)] top-1/2 hidden -translate-y-1/2 flex-col items-end gap-3 ${gpuTier === 0 ? "" : "md:flex"}`} aria-hidden>
+        <div className={`short-hide absolute right-[var(--gx)] top-1/2 hidden -translate-y-1/2 flex-col items-end gap-3 ${gpuTier === 0 ? "" : "md:flex"}`} aria-hidden>
           {STEPS.map((s, i) => (
             <div key={i} className="hud flex items-center gap-2" style={{ opacity: i === step ? 1 : 0.45 }}>
               <span className={i === step ? 'text-fg' : ''}>{s.kicker}</span>
               <span className="block h-px transition-all duration-700" style={{ width: i === step ? 28 : 12, background: i === step ? 'var(--signal)' : 'rgb(var(--fg-rgb) / 0.4)' }} />
             </div>
           ))}
-        </div>
-
-        {/* controls: prompt chips + generate + brush mode */}
-        <div className={`gx absolute bottom-[86px] left-0 w-full md:bottom-[92px] md:w-auto md:max-w-[56vw] ${gpuTier === 0 ? 'hidden' : ''}`}>
-          <div className="hud mb-2 flex items-center gap-2">
-            <span>Prompt</span>
-            <span className="text-fg-22">·</span>
-            <span className="hidden md:inline">{touch ? 'tap brush, then drag the cloud' : 'drag across the cloud to ' + (mode === 'denoise' ? 'denoise' : 'add noise')}</span>
-          </div>
-          <div className="pointer-events-auto -mx-[var(--gx)] flex gap-2 overflow-x-auto px-[var(--gx)] pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0" role="group" aria-label="Prompt">
-            {PROMPTS.map((pr) => (
-              <button
-                key={pr.id}
-                type="button"
-                className="pill shrink-0 normal-case tracking-[0.04em]"
-                data-active={prompt === pr.id && step >= 3 ? 'true' : 'false'}
-                aria-pressed={prompt === pr.id}
-                onClick={() => generate(pr.id)}
-                style={prompt === pr.id && step < 3 ? { borderColor: 'rgb(var(--fg-rgb) / 0.5)', color: 'rgb(var(--fg-rgb))' } : undefined}
-              >
-                “{pr.label}”
-              </button>
-            ))}
-          </div>
-          <div className="pointer-events-auto mt-3 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => generate()}
-              className="pill !h-[46px] !px-6 !text-[12px]"
-              data-active="true"
-              style={{ boxShadow: '0 10px 40px -12px rgb(255 79 31 / 0.65)' }}
-              aria-label="Generate: re-noise and run the reverse process"
-            >
-              <span aria-hidden className={busy ? 'inline-block animate-spin' : 'inline-block'}>✺</span>
-              {busy ? 'Denoising…' : 'Generate'}
-            </button>
-            <div className="flex rounded-full border border-[var(--hairline)] p-[3px]" role="group" aria-label="Brush mode">
-              {[['denoise', '− Denoise'], ['noise', '+ Noise']].map(([m, l]) => (
-                <button
-                  key={m}
-                  type="button"
-                  aria-pressed={mode === m}
-                  onClick={() => setMode(m)}
-                  className="hud h-[32px] rounded-full px-3 transition-colors duration-500"
-                  style={mode === m ? { background: 'rgb(var(--fg-rgb))', color: 'var(--paper)' } : undefined}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-            {showTouchBrush ? (
-              <button type="button" className="pill" data-active={brushOn ? 'true' : 'false'} aria-pressed={brushOn} onClick={() => setBrushOn((v) => !v)}>
-                {brushOn ? 'Brush on' : 'Brush'}
-              </button>
-            ) : null}
-          </div>
         </div>
 
         {/* readouts */}

@@ -216,7 +216,7 @@ function Stage() {
             <div className="mt-3 text-[12.5px] leading-snug text-fg-68">
               {headInfo ? <><span style={{ color: headInfo.color }}>{headInfo.name}:</span> “{headInfo.q}”</> : 'Four heads, four questions, one sentence.'}
             </div>
-            <div className="hud mt-1.5 !text-[9px] !leading-relaxed text-fg-22">Row = token asking · column = token attended · rows sum to 1{mask ? ' · future masked' : ''}</div>
+            <div className="short-hide hud mt-1.5 !text-[9px] !leading-relaxed text-fg-22">Row = token asking · column = token attended · rows sum to 1{mask ? ' · future masked' : ''}</div>
           </div>
         )}
 

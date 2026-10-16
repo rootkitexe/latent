@@ -245,22 +245,26 @@ function Overlay({ sim, live3d = true }) {
         .rl-ff{border-color:rgb(255 79 31 / .55);color:#fff;background:rgb(255 79 31 / .14)}
         .rl-ff:hover{background:var(--signal);border-color:var(--signal)}
         .rl-dot{animation:rlpulse 1.6s ease-in-out infinite}
+        @media (min-width:768px) and (max-height:820px){.rl-sliders[data-show=false]{display:none}}
         @keyframes rlpulse{50%{opacity:.35}}
       `}</style>
 
       {/* Title + step explainer */}
-      <div className="gx absolute left-0 top-[76px] w-full md:top-[92px] md:w-[44%] md:max-w-[640px]">
+      <div className="gx ov-col right-0">
+<div className="shrink-0 w-full md:w-[50%] md:max-w-[680px]">
         <div className="hud flex items-center gap-3">
           <span>L07 / Reinforcement learning</span>
           <span className="hidden h-px w-10 bg-[var(--hairline)] md:inline-block" />
           <span className="hidden md:inline">{String(step + 1).padStart(2, '0')} / {String(STEPS.length).padStart(2, '0')}</span>
         </div>
-        <h2 className="display mt-3 !text-[clamp(34px,5.4vw,92px)]">
+        <h2 className="display mt-3 !text-[clamp(30px,min(5.4vw,9.5svh),92px)]">
           Trial <span className="text-fg-42">&amp;</span> reward
         </h2>
-        <p className="serif mt-1 text-[clamp(22px,2.4vw,38px)] leading-none text-signal-hot">nobody told it the way.</p>
+        <p className="serif mt-1 text-[clamp(19px,min(2.4vw,4svh),38px)] leading-none text-signal-hot">nobody told it the way.</p>
+</div>
+<div className="fit-copy w-full md:w-[50%] md:max-w-[680px]">
 
-        <div key={step} className="rl-fade mt-5 md:mt-9" aria-live="polite">
+        <div key={step} className="rl-fade mt-5 md:mt-7" aria-live="polite">
           <div className="hud mb-2 md:hidden">{String(step + 1).padStart(2, '0')} / {String(STEPS.length).padStart(2, '0')}</div>
           <h3 className="h3 text-fg">{S.title}</h3>
           <p className="body mt-2 !text-[13.5px] leading-[1.5] md:mt-3 md:!text-[clamp(15px,1.1vw,17px)]">{S.body}</p>
@@ -271,21 +275,23 @@ function Overlay({ sim, live3d = true }) {
           </div>
         )}
       </div>
-
-      {/* Controls (desktop) */}
-      <div className={`gx absolute bottom-[84px] left-0 hidden ${live3d ? "md:block" : ""}`}>
+<div className={`ov-controls hidden ${live3d ? "md:block" : ""}`}>
         <div className="panel pointer-events-auto w-[min(470px,40vw)] p-3.5">
           <div className="flex items-center justify-between gap-3">
             {toolPills}
             <span className="hud text-right">Click / drag<br />a tile</span>
           </div>
-          <div className="mt-3">{sliders}</div>
+          <div className="rl-sliders mt-3" data-show={step === 3}>{sliders}</div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {playBtn}{speedBtn}{ffBtn}
             <span className="ml-auto flex items-center gap-1">{resetLinks}</span>
           </div>
         </div>
       </div>
+</div>
+
+      {/* Controls (desktop) */}
+      
 
       {/* Readouts (desktop) */}
       <div className={`gx absolute bottom-[84px] right-0 hidden ${live3d ? "md:block" : ""}`}>

@@ -360,7 +360,8 @@ export default function Scene({ ctl }) {
 
     // --- feature card follows the selected neuron
     if (cardGroup.current) {
-      const f = shared.uFeature.value;
+      // on short desktop windows the floating card lands on the explainer; the DOM inspector shows the same map
+      const f = size.width >= 768 && size.height <= 820 ? 0 : shared.uFeature.value;
       cardGroup.current.visible = f > 0.02;
       neuronPos(OFFSETS[ctl.sel.layer] + ctl.sel.idx, tmp);
       // float the card in front of the layer, pulled toward the axis, with a leader line to its neuron

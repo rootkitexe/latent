@@ -243,14 +243,16 @@ function Stage() {
 
       <div className="pointer-events-none absolute inset-0 z-10">
         {/* ---- top-left: label, title, serif, step explainer */}
-        <div className="gx absolute left-0 top-[78px] w-full max-w-[640px] md:top-[92px]">
+        <div className="gx ov-col w-full max-w-[640px] md:max-w-[min(640px,calc(100vw-330px-2*var(--gx)))]">
+          <div className="shrink-0">
           <div className="hud">L03 / Deep Networks</div>
-          <h2 className="display mt-3 text-fg" style={{ fontSize: 'clamp(36px, 5vw, 84px)' }}>
+          <h2 className="display mt-3 text-fg" style={{ fontSize: 'clamp(32px, min(5vw, 9svh), 84px)' }}>
             Deep Networks
           </h2>
-          <p className="serif mt-2 text-[22px] text-ice md:text-[30px]">every layer asks a better question.</p>
+          <p className="serif mt-2 text-[22px] text-ice md:text-[clamp(20px,min(2.2vw,4.2svh),30px)]">every layer asks a better question.</p>
+          </div>
 
-          <div className="mt-6 hidden md:mt-10 md:block" key={step} style={{ animation: 'netIn .9s cubic-bezier(.16,1,.3,1) both' }}>
+          <div className="fit-copy mt-6 hidden md:mt-[clamp(16px,4svh,40px)] md:block" key={step} style={{ animation: 'netIn .9s cubic-bezier(.16,1,.3,1) both' }}>
             <div className="hud flex items-center gap-3">
               <span className="text-signal">0{step + 1}</span>
               <span className="h-px w-8 bg-fg-22" />
@@ -262,8 +264,8 @@ function Stage() {
 
           {/* feature inspector (step 3) */}
           <div
-            className="pointer-events-auto mt-5 hidden items-center gap-4 transition-opacity duration-700 md:flex"
-            style={{ opacity: step === 2 ? 1 : 0, visibility: step === 2 ? 'visible' : 'hidden' }}
+            className={`ov-controls pointer-events-auto hidden items-center gap-4 ${step === 2 ? 'md:flex' : ''}`}
+            style={{ animation: 'netIn .9s cubic-bezier(.16,1,.3,1) both' }}
           >
             <canvas ref={(el) => (ui.current.feat = el)} width={28} height={28} className="h-[96px] w-[96px] rounded-[6px] border border-hairline" style={{ imageRendering: 'pixelated' }} aria-label="Heatmap of the selected neuron's input weights" />
             <div>
@@ -288,8 +290,8 @@ function Stage() {
             <p className="mt-1 text-[13.5px] leading-[1.45] text-fg-68">{S.body}</p>
           </div>
 
-          <div className="panel pointer-events-auto flex gap-4 p-3 md:w-[330px] md:flex-col md:gap-0 md:p-4">
-            <div className="w-[132px] shrink-0 md:w-full">
+          <div className="net-panel panel pointer-events-auto flex gap-4 p-3 md:w-[330px] md:flex-col md:gap-0 md:p-4">
+            <div className="net-pad w-[132px] shrink-0 md:w-full">
               <div className="hud mb-2 hidden items-center justify-between md:flex">
                 <span>Draw a digit 0–9</span>
                 <span className="text-fg-22">28×28 → input</span>
@@ -301,7 +303,7 @@ function Stage() {
               </div>
             </div>
 
-            <div className="min-w-0 flex-1 md:mt-4">
+            <div className="net-out min-w-0 flex-1 md:mt-4">
               <div className="flex items-end justify-between">
                 <div>
                   <div className="hud">Prediction</div>
@@ -357,6 +359,12 @@ function Stage() {
 
       <style>{`
         @keyframes netIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        /* short desktop windows: pad beside the results instead of above them (about half the height) */
+        @media (min-width: 768px) and (max-height: 820px) {
+          .net-panel { flex-direction: row !important; width: min(520px, 46vw) !important; gap: 16px !important; padding: 14px !important; }
+          .net-panel .net-pad { width: clamp(150px, 26svh, 210px) !important; }
+          .net-panel .net-out { margin-top: 0 !important; }
+        }
         .net-bar[data-target='true'] [data-label] { color: var(--ice); }
         .net-bar[data-target='true'] > span:first-child { box-shadow: inset 0 0 0 1px var(--ice); }
       `}</style>

@@ -13,6 +13,21 @@ const SIGNAL = new THREE.Color('#ff4f1f');
 const ICE = new THREE.Color('#a8f0ff');
 
 /* ------------------------------------------------------------------ stars */
+/** Does a label box starting at (x, y) with width w intersect any keep-out zone [l, t, r, b]? */
+const ALWAYS_SHOW = new Set(['focus', 'answer', 'op', 'calc']);
+/** Does a nebula name at (x, y) collide with a word label box [x, y, w]? */
+function hitsWords(boxes, x, y, w) {
+  if (!boxes) return false;
+  for (const [qx, qy, qw] of boxes) if (x < qx + qw && qx < x + w && Math.abs(qy - y) < 16) return true;
+  return false;
+}
+
+function inZone(zones, x, y, w) {
+  if (!zones) return false;
+  for (const z of zones) if (x < z[2] && x + w > z[0] && y > z[1] && y < z[3]) return true;
+  return false;
+}
+
 function Stars({ G, S }) {
   const mat = useRef();
   const geo = useMemo(() => {
@@ -429,6 +444,14 @@ function Rig({ G, S }) {
     if (!pool.length) return;
     if (f % 5 === 1 || S.labelsDirty) {
       S.labelsDirty = false;
+      // keep-out zones: on-screen overlay blocks ([data-ov-avoid]) where labels would sit on top of text
+      const zones = (S.zones = S.zones || []);
+      zones.length = 0;
+      for (const el of document.querySelectorAll('[data-ov-avoid]')) {
+        const b = el.getBoundingClientRect();
+        if (b.width < 2 || b.height < 2 || parseFloat(getComputedStyle(el).opacity) < 0.05) continue;
+        zones.push([b.left - S.rect.left - 8, b.top - S.rect.top - 12, b.right - S.rect.left + 8, b.bottom - S.rect.top + 8]);
+      }
       const chosen = [];
       const taken = new Set();
       const placed = [];
@@ -443,6 +466,8 @@ function Rig({ G, S }) {
         const x = screen[i * 3], y = screen[i * 3 + 1];
         const wd = word || G.words[i];
         const w = wid(wd, val, kind);
+        // the query word and the analogy terms/answer always show; everything else stays off the overlay text
+        if (!ALWAYS_SHOW.has(kind) && inZone(S.zones, x, y, w)) return false;
         let dy = 0;
         while (collides(x, y + dy, w) && dy < 64) dy += 15;
         taken.add(i); chosen.push({ i, val, kind, word: wd, dy });
@@ -478,6 +503,7 @@ function Rig({ G, S }) {
         if (S.ambientLabels > 0) pick(S.ambientLabels, 'ambient', (i) => screen[i * 3 + 2]);
       }
       slots.current = chosen;
+      S.wordBoxes = placed; // nebula names keep clear of these
       for (let s = 0; s < pool.length; s++) {
         const el = pool[s];
         const c = chosen[s];
@@ -500,7 +526,7 @@ function Rig({ G, S }) {
       el.style.transform = `translate3d(${screen[i * 3].toFixed(1)}px, ${(screen[i * 3 + 1] + ch[s].dy).toFixed(1)}px, 0)`;
     }
 
-    // ---------- nebula names
+    // ---------- nebula names (hidden where they would sit on overlay text)
     const cl = S.clusterEls;
     const show = S.clusterLabels;
     let nPlaced = 0;
@@ -516,6 +542,7 @@ function Rig({ G, S }) {
         const x = (V.x * 0.5 + 0.5) * W;
         let y = (-V.y * 0.5 + 0.5) * H;
         const w = C.label.length * 9 + 10;
+        if (inZone(S.zones, x - w / 2, y, w) || hitsWords(S.wordBoxes, x - w / 2, y, w)) { el.style.opacity = '0'; continue; }
         for (let tries = 0; tries < 6; tries++) {
           let hit = false;
           for (let p = 0; p < nPlaced; p++) {

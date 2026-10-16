@@ -79,16 +79,16 @@ function Stage() {
       </ChapterCanvas>
 
       {/* A — the recap */}
-      <div ref={aRef} className="absolute left-[var(--gx)] top-[13svh] w-[min(520px,88vw)] opacity-0">
-        <div className="hud mb-5 flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full bg-signal" />L8 / Output</div>
-        <h2 className="display" style={{ fontSize: 'clamp(36px, 4.4vw, 72px)' }}>
+      <div ref={aRef} className="absolute left-[var(--gx)] top-[clamp(76px,12svh,120px)] w-[min(600px,88vw)] opacity-0">
+        <div className="hud mb-[clamp(10px,2svh,20px)] flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full bg-signal" />L8 / Output</div>
+        <h2 className="display" style={{ fontSize: 'clamp(28px, min(4.4vw, 6.6svh), 72px)' }}>
           Everything you passed through is <span className="serif text-signal">one network.</span>
         </h2>
-        <ol className="mt-9 border-t border-[var(--hairline)]">
+        <ol className="mt-[clamp(14px,3.6svh,36px)] border-t border-[var(--hairline)]">
           {RECAP.map((r, i) => (
             <li key={r.id} className="border-b border-[var(--hairline)]">
               <button
-                className="group flex w-full items-baseline gap-5 py-3 text-left"
+                className="group flex w-full items-baseline gap-5 py-[clamp(5px,1.25svh,12px)] text-left"
                 data-cursor="Revisit"
                 onPointerEnter={() => { finale.hover = i + 1; playBlip((i + 1) / 8, 0.3); }}
                 onPointerLeave={() => (finale.hover = -1)}
@@ -119,11 +119,11 @@ function Stage() {
       <div ref={cRef} className="absolute inset-0 flex flex-col justify-end px-[var(--gx)] pb-[96px] opacity-0">
         <div className="absolute inset-0 -z-0" style={{ background: 'linear-gradient(180deg, transparent 20%, rgba(5,5,6,.82) 70%)' }} />
         <div className="relative">
-          <div className="hud mb-6">Training complete · loss 0.038 · 240 epochs</div>
-          <h2 className="display max-w-[16ch]" style={{ fontSize: 'clamp(42px, 6.6vw, 112px)' }}>
+          <div className="hud mb-[clamp(10px,2.5svh,24px)]">Training complete · loss 0.038 · 240 epochs</div>
+          <h2 className="display max-w-[16ch]" style={{ fontSize: 'clamp(28px, min(6.6vw, 10svh), 112px)' }}>
             That&apos;s the whole trick, repeated <span className="serif text-signal">a few billion times.</span>
           </h2>
-          <div className="mt-10 flex flex-col gap-8 border-t border-[var(--hairline)] pt-8 md:flex-row md:items-end md:justify-between">
+          <div className="mt-[clamp(18px,4.5svh,40px)] flex flex-col gap-6 border-t border-[var(--hairline)] pt-[clamp(14px,3.5svh,32px)] md:flex-row md:items-end md:justify-between">
             <p className="body">
               LATENT is a demo by <span className="text-fg">Haloxion</span>, an AI-first design studio. We build
               interfaces like this one — where the interaction is the explanation.
@@ -137,11 +137,11 @@ function Stage() {
               </button>
             </div>
           </div>
-          <div className="hud mt-10 flex flex-wrap justify-between gap-4 text-fg-22">
+          <div className="hud mt-[clamp(16px,4svh,40px)] flex flex-wrap justify-between gap-4 text-fg-22">
             <span>© 2026 Haloxion</span>
             <a href={`mailto:${STUDIO.email}`} className="hover:text-fg">{STUDIO.email}</a>
             <a href={STUDIO.site} target="_blank" rel="noreferrer" className="hover:text-fg">haloxion.com</a>
-            <span>Made with three.js, a neuron from Blender, and a lot of gradients</span>
+            <span className="hidden sm:inline">Made with three.js, a neuron from Blender, and a lot of gradients</span>
           </div>
         </div>
       </div>

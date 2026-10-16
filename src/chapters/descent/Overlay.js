@@ -49,15 +49,18 @@ export default function Overlay({ step, lr, onLr, noise, onNoise, send, hud, tou
       <style>{CSS}</style>
 
       {/* Title block */}
-      <div className="gx absolute left-0 top-[68px] max-w-[min(540px,100%)] md:top-[84px]">
+      <div className="gx ov-col right-0">
+<div className="shrink-0 max-w-[min(540px,100%)]">
         <div className="hud flex items-center gap-3">
           <span className="text-signal">L02</span>
           <span>/ Gradient descent · Loss landscape</span>
         </div>
-        <h2 className="display mt-3 text-[clamp(34px,5.2vw,88px)]">Gradient Descent</h2>
-        <p className="serif mt-2 text-[clamp(20px,2.3vw,36px)] leading-none text-fg-68">learning is just falling, carefully.</p>
+        <h2 className="display mt-3 text-[clamp(30px,min(5.2vw,9svh),88px)]">Gradient Descent</h2>
+        <p className="serif mt-2 text-[clamp(19px,min(2.3vw,4.2svh),36px)] leading-none text-fg-68">learning is just falling, carefully.</p>
+</div>
+<div className="fit-copy max-w-[min(540px,100%)]">
 
-        <div key={step} className="dc-in mt-5 md:mt-9" aria-live="polite">
+        <div key={step} className="dc-in mt-5 md:mt-7" aria-live="polite">
           <div className="hud flex items-center gap-2">
             <span className="text-fg">{pad(step + 1)}</span>
             <span>/ {pad(STEPS.length)} — {LABELS[step]}</span>
@@ -71,8 +74,7 @@ export default function Overlay({ step, lr, onLr, noise, onNoise, send, hud, tou
           ))}
         </nav>
       </div>
-
-      <div className="gx absolute inset-x-0 bottom-[74px] flex flex-col gap-3 md:bottom-[88px] md:flex-row md:items-end md:justify-between">
+<div className="ov-controls relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
       {/* Controls — bottom left */}
       <div className="order-2 w-full md:order-1 md:w-auto md:max-w-[440px]">
         <div className="hud mb-3 flex items-center gap-2.5 !text-fg-68 max-md:hidden">
@@ -154,7 +156,7 @@ export default function Overlay({ step, lr, onLr, noise, onNoise, send, hud, tou
 
       {/* Readouts — bottom right */}
       <div
-        className="panel pointer-events-none order-1 w-full p-3 md:order-2 md:w-[300px] md:p-4"
+        className="panel pointer-events-none order-1 w-full p-3 md:absolute md:bottom-0 md:right-0 md:order-2 md:w-[300px] md:p-4"
         aria-label="Live readouts"
       >
         {step !== 4 ? (
@@ -198,6 +200,9 @@ export default function Overlay({ step, lr, onLr, noise, onNoise, send, hud, tou
         </div>
       </div>
       </div>
+</div>
+
+      
     </div>
   );
 }
