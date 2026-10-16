@@ -1,0 +1,7 @@
+node_modules/
+.next/
+out/
+.netlify/
+*.log
+.DS_Store
+scripts/dev/_*.mjs

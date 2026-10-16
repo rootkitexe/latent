@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({ channel: 'chrome', headless: true });
+const p = await b.newPage();
+p.on('console', (m) => console.log('console', m.type(), m.text().slice(0, 300)));
+p.on('pageerror', (e) => console.log('pageerror', String(e).slice(0, 400)));
+p.on('response', (r) => r.status() >= 400 && console.log('http', r.status(), r.url()));
+await p.goto(process.argv[2], { waitUntil: 'load' });
+await p.waitForTimeout(8000);
+console.log('sections', await p.evaluate(() => document.querySelectorAll('section').length));
+await b.close();
